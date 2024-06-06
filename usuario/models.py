@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+
 
 # Create your models here.
 
@@ -34,6 +36,15 @@ class RegistroCurso(models.Model):
     turno = models.CharField(max_length=5, choices=TURNO_CHOICES)
     sala = models.ForeignKey(Sala, on_delete=models.CASCADE)
     
+class AtivarPesquisaSalas(models.Model):
+    ativado = models.BooleanField(default=False)
 
+    def __str__(self):
+        return "Pesquisa de Salas Ativada" if self.ativado else "Pesquisa de Salas Desativada"
+    
 
+    def save(self, *args, **kwargs):
+        if not self.pk and AtivarPesquisaSalas.objects.exists():
+            raise ValidationError('Já existe um registro de AtivarPesquisaSalas.')
+        super(AtivarPesquisaSalas, self).save(*args, **kwargs)
 

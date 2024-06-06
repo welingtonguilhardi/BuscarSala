@@ -3,13 +3,16 @@ from django.shortcuts import redirect, render
 from django.contrib.messages import constants
 from django.contrib import messages
 
-from usuario.models import Sala,Curso,RegistroCurso
+from usuario.models import AtivarPesquisaSalas, Sala,Curso,RegistroCurso
 
 from django.urls import reverse
+from django.contrib.auth import logout
+
 
 def home(request):
+    status_pesquisa_salas = AtivarPesquisaSalas.objects.all().first().ativado
     
-    return render(request,'menu.html')
+    return render(request,'menu.html',{"status_pesquisa_salas":status_pesquisa_salas})
 
 def pesquisar_sala(request):
     cursos = Curso.objects.all()
@@ -50,3 +53,8 @@ def pavilhao (request,numero_pavilhao):
     salas = Sala.objects.filter(pavilhao = numero_pavilhao)
     
     return render (request,'pavilhao.html',{'salas':salas,'numero_pavilhao':numero_pavilhao })
+
+
+def deslogar(request):
+    logout(request)
+    return redirect("/")
