@@ -20,7 +20,7 @@
                 <a class="btn btn-primary btn-lg btn-block" href="{% url 'pavilhao' 2 %}">Pavilhão 02</a>
                 <a class="btn btn-primary btn-lg btn-block" href="#">Setores</a>
                 
-                <a class="btn btn4 btn-primary btn-lg btn-block" {% if status_pesquisa_salas %} href="{% url 'pesquisar_sala' %}" {% endif %}>Não sei minha sala de aula</a>
+                <a class="btn btn4 btn-primary btn-lg btn-block" {% if status_pesquisa_salas %}  href="{% url 'pesquisar_sala' %}" {% else %} onclick="alert('Funcionalidade desativada temporariamente')" {% endif %}>Não sei minha sala de aula</a>
                 
             </div>
         </div>
