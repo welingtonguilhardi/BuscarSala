@@ -14,7 +14,7 @@
 <body>
     <main>
         <div class="pricipal">
-            <h1 class="text-center">PAVILHÃO 01</h1>
+            <h1 class="text-center">PAVILHÃO 0{{numero_pavilhao}}</h1>
             <div class="botoes">
                 {% for sala in salas  %}
                     <a class="btn btn-primary btn-lg btn-block" href="{% url 'video_sala' sala.pk %}">Sala {{sala.numero}}</a>
