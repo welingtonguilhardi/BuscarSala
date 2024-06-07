@@ -22,7 +22,11 @@ h1{
     border-bottom: 1px solid #fff;
 }
 
-
+@media (max-width: 768px) {
+  .titulo {
+        margin-top: 420px; 
+    }
+}
 
 .video-container {
     position: relative;
@@ -98,4 +102,9 @@ h1{
     outline: none;
     border-color: #007bff;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.icon a i:hover{
+    color: #fff !important;
+    transition: 1s !important;
 }
