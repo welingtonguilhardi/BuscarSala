@@ -59,15 +59,11 @@ h1{
     margin-top: 20px;
 }
 .btn {
-    width: 100%;
+    width: 150%;
     height: 70px;
     line-height: 50px;
 }
 
-.btn4{
-    width: 300px; 
-    height: 70px; 
-}
 
 .pesquisa input{
     display: flex;
