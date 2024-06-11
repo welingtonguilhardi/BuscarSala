@@ -27,11 +27,16 @@ class CursoAdmin(admin.ModelAdmin):
     search_fields = ('nome',)
     search_help_text = 'Busque aqui por nome do curso.'
 
+class CronogramaSalaInline(admin.TabularInline):  # ou admin.StackedInline
+    model = RegistroCurso.sala.through
+    extra = 1
+
 class RegistroCursoAdmin(admin.ModelAdmin):
     list_display = ('curso', 'semestre', 'turno')
     list_filter = ('turno', 'semestre', 'curso', 'sala')
     search_fields = ('curso__nome', 'sala__numero')
     search_help_text = 'Busque aqui por numero da sala ou nome do curso.'
+    inlines = [CronogramaSalaInline]
     
 class AtivarPesquisaSalasAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
