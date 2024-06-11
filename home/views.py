@@ -3,10 +3,12 @@ from django.shortcuts import redirect, render
 from django.contrib.messages import constants
 from django.contrib import messages
 
-from usuario.models import AtivarPesquisaSalas, Sala,Curso,RegistroCurso
+from usuario.models import AtivarPesquisaSalas, Contador, Sala,Curso,RegistroCurso
 
 from django.urls import reverse
 from django.contrib.auth import logout
+
+import datetime
 
 
 def home(request):
@@ -17,27 +19,53 @@ def home(request):
 def pesquisar_sala(request):
     cursos = Curso.objects.all()
     turnos = RegistroCurso.TURNO_CHOICES
-    
-    
+
     context = {
-        'cursos':cursos,
-        'turnos':turnos
+        'cursos': cursos,
+        'turnos': turnos
     }
-    
+
     if request.method == 'POST':
         semestre = request.POST['semestre']
         curso = request.POST['curso']
         turno = request.POST['turno']
         
-        try:
-            registro = RegistroCurso.objects.get(curso = curso, turno = turno, semestre = semestre )
-            return redirect (reverse('video_sala', kwargs={'id_sala':registro.sala.pk}))
+        # Obtendo o dia da semana atual
+        dia_semana = datetime.datetime.today().weekday()
+        # Mapear para o formato do banco de dados (Django começa com 0 para segunda-feira)
+        dias_mapping = {
+            0: '2',  # Segunda-feira
+            1: '3',  # Terça-feira
+            2: '4',  # Quarta-feira
+            3: '5',  # Quinta-feira
+            4: '6',  # Sexta-feira
+            5: '7',  # Sábado
+            6: '1',  # Domingo
+        }
+        dia_atual = dias_mapping[dia_semana]
         
+        try:
+            # Filtrar RegistroCurso com base nos critérios
+            registros = RegistroCurso.objects.filter(
+                curso=curso,
+                turno=turno,
+                semestre=semestre
+            )
+            
+            # Verificar o cronograma das salas para o dia atual
+            for registro in registros:
+                for cronograma in registro.sala.all():
+                    if cronograma.dias.filter(dia=dia_atual).exists():
+                        # Encontrou a sala no dia atual
+                        return redirect(reverse('video_sala', kwargs={'id_sala': cronograma.sala.pk}))
+            
+            # Se nenhum registro corresponder ao dia atual
+            messages.add_message(request, constants.ERROR, "Sala não encontrada para o dia atual")
+
         except RegistroCurso.DoesNotExist:
-            messages.add_message(request,constants.ERROR,"Registro de curso não encontrado")    
-
-    return render (request,'pesquisarSala.html',context)
-
+            messages.add_message(request, constants.ERROR, "Registro de curso não encontrado")
+    
+    return render(request, 'pesquisarSala.html', context)
 
 
 def index (request):
@@ -46,6 +74,12 @@ def index (request):
 
 def video_sala (request,id_sala):
     sala = Sala.objects.get( pk = id_sala )
+    
+    try:
+        Contador.objects.create(sala=sala)
+    except:
+        pass
+    
     return render (request, 'videoSala.html',{"sala":sala})
 
 def pavilhao (request,numero_pavilhao):

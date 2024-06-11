@@ -1,8 +1,12 @@
 # admin.py
 
 from django.contrib import admin
-from .models import Sala, Curso, RegistroCurso,AtivarPesquisaSalas
+from .models import Contador, Sala, Curso, RegistroCurso,AtivarPesquisaSalas,CronogramaSala,Dias
 from django.contrib.auth.models import User, Group
+from .forms import DiasForm
+from django.db.models import Count
+
+
 
 from django.core.exceptions import ValidationError
 
@@ -24,7 +28,7 @@ class CursoAdmin(admin.ModelAdmin):
     search_help_text = 'Busque aqui por nome do curso.'
 
 class RegistroCursoAdmin(admin.ModelAdmin):
-    list_display = ('curso', 'semestre', 'turno', 'sala')
+    list_display = ('curso', 'semestre', 'turno')
     list_filter = ('turno', 'semestre', 'curso', 'sala')
     search_fields = ('curso__nome', 'sala__numero')
     search_help_text = 'Busque aqui por numero da sala ou nome do curso.'
@@ -45,3 +49,24 @@ admin.site.register(AtivarPesquisaSalas, AtivarPesquisaSalasAdmin)
 admin.site.register(Sala, SalaAdmin)
 admin.site.register(Curso, CursoAdmin)
 admin.site.register(RegistroCurso, RegistroCursoAdmin)
+admin.site.register(CronogramaSala)
+
+class DiasAdmin(admin.ModelAdmin):
+    form = DiasForm
+
+admin.site.register(Dias, DiasAdmin)
+
+
+class ContadorAdmin(admin.ModelAdmin):
+    list_display = ('sala', 'data')
+    list_filter = ('sala', 'data')
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        qs = qs.annotate(sala_count=Count('sala'))
+        return qs
+
+    def sala_count(self, obj):
+        return obj.sala_count
+
+admin.site.register(Contador, ContadorAdmin)
